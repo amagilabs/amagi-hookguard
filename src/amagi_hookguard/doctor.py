@@ -166,7 +166,7 @@ def check_file(sf: SettingsFile, project_dir: str, wiring: List[Wiring]) -> Sect
     for event, groups in hooks.items():
         if event not in KNOWN_EVENTS:
             if event.lower() in lower_events:
-                sec.add(FAIL, "event-case", f"event '{event}' should be '{lower_events[event.lower()]}' (names are case-sensitive; this block never runs)")
+                sec.add(FAIL, "event-case", f"event '{event}' should be '{lower_events[event.lower()]}' (case-sensitive; this block never runs)")
             else:
                 sec.add(WARN, "event-unknown", f"'{event}' is not a hook event amagi-hookguard knows; check the spelling")
         if not isinstance(groups, list):
@@ -188,7 +188,7 @@ def check_file(sf: SettingsFile, project_dir: str, wiring: List[Wiring]) -> Sect
                     sec.add(FAIL, "matcher-regex", f"{where}.matcher {matcher!r} is not a valid regex ({exc})")
                 for part in matcher.split("|"):
                     if part in lower_tools and part != lower_tools[part]:
-                        sec.add(FAIL, "matcher-case", f"{where}.matcher {matcher!r}: tool names are case-sensitive, '{part}' never matches '{lower_tools[part]}'")
+                        sec.add(FAIL, "matcher-case", f"{where}.matcher {matcher!r}: '{part}' never matches '{lower_tools[part]}' (case-sensitive)")
             for hi, hook in enumerate(group["hooks"]):
                 hwhere = f"{where}.hooks[{hi}]"
                 if not isinstance(hook, dict):
@@ -231,7 +231,7 @@ def check_wiring(wiring: List[Wiring]) -> Section:
             w = pre[0]
             sec.add(OK, "pre", f"PreToolUse runs hookguard for {', '.join(required_tools())} ({w.scope}, matcher {w.matcher!r})")
     if not post:
-        sec.add(WARN, "post-missing", "no PostToolUse hook runs amagi-hookguard, so tool calls are not audit-logged. Fix: amagi-hookguard install")
+        sec.add(WARN, "post-missing", "no PostToolUse hook runs amagi-hookguard, so nothing is logged. Fix: amagi-hookguard install")
     elif not any(matcher_covers_all(w.matcher) for w in post):
         sec.add(WARN, "post-coverage", f"PostToolUse matcher(s) {[w.matcher for w in post]} log only some tools; use \"*\" to log every call")
     else:
