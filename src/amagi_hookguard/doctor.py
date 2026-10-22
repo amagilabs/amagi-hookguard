@@ -302,7 +302,7 @@ def self_test(wiring: List[Wiring], project_dir: str) -> Section:
                 res = _run_hook(expand_command(post.command, project_dir), event, env, tmp, float(post.timeout or 10) + 5)
                 lines = list(audit.read(log))
                 if res.returncode == 0 and any(r.get("event") == "PostToolUse" for r in lines):
-                    sec.add(OK, "selftest", "PostToolUse event -> written to the audit log")
+                    sec.add(OK, "selftest", "PostToolUse event -> logged (to a scratch file; your log is untouched)")
                 else:
                     sec.add(FAIL, "selftest", f"PostToolUse event -> exit {res.returncode}, no audit line written")
             except subprocess.TimeoutExpired:

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 import os
 import sys
@@ -17,7 +16,9 @@ from . import __version__
 PROG = "amagi-hookguard"
 
 
-def _parser() -> argparse.ArgumentParser:
+def _parser() -> "argparse.ArgumentParser":
+    import argparse
+
     p = argparse.ArgumentParser(
         prog=PROG,
         description="Guardrail hooks for Claude Code: block destructive commands, secret-file reads and "
@@ -194,6 +195,14 @@ def main(argv: Optional[List[str]] = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
         except (AttributeError, ValueError):
             pass
+    if argv is None:
+        argv = sys.argv[1:]
+    # Fast path for the hook: on Python 3.13+ argparse alone pulls in ~0.3 s of
+    # imports (_colorize, dataclasses, inspect, shutil), paid on every tool call.
+    if list(argv) == ["hook"]:
+        from . import hook
+
+        return hook.run()
     args = _parser().parse_args(argv)
     if args.cmd is None:
         _parser().print_help()
