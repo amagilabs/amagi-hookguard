@@ -15,7 +15,7 @@ def test_command_name_strips_paths_and_extensions():
 
 
 def test_tokenize_keeps_windows_backslashes():
-    assert tokenize(r"type C:\Users\me\.env") == ["type", r"C:\Users\me\.env"]
+    assert tokenize(r"type D:\home\me\.env") == ["type", r"D:\home\me\.env"]
 
 
 def test_tokenize_survives_unbalanced_quotes():

@@ -6,7 +6,7 @@ from amagi_hookguard.secretfiles import secret_match
 @pytest.mark.parametrize("path", [
     ".env", "app/.env", ".env.production", "config/prod.env", ".envrc",
     "certs/server.pem", "tls.key", "store.p12", "~/.ssh/id_rsa", "/home/u/.ssh/id_ed25519",
-    r"C:\Users\me\.ssh\id_ecdsa", "~/.aws/credentials", "~/.netrc", ".git-credentials",
+    r"D:\home\me\.ssh\id_ecdsa", "~/.aws/credentials", "~/.netrc", ".git-credentials",
     ".npmrc", ".pypirc", "credentials.json", "client_secret_123.json", "terraform.tfvars",
     "~/.docker/config.json", "~/.kube/config", "secrets.yaml", "vault.kdbx", "ENV/.ENV",
 ])

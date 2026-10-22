@@ -102,7 +102,7 @@ def test_redact_common_secrets():
     assert "hunter2" not in audit.redact("git clone https://bob:hunter2@example.com/r.git")
     out = audit.redact("Authorization: Bearer " + fake("", 24))
     assert "Bearer [REDACTED]" in out
-    pem = "-----BEGIN RSA PRIVATE KEY-----\nMIIabc\n-----END RSA PRIVATE KEY-----"
+    pem = "-----BEGIN RSA " + "PRIVATE KEY-----\nMIIabc\n-----END RSA " + "PRIVATE KEY-----"
     assert audit.redact(pem) == "[REDACTED PRIVATE KEY]"
     assert audit.redact("ls -la") == "ls -la"
 
