@@ -60,4 +60,4 @@ on stdin. You don't call `hook` by hand.
   user config sets `"trust_project_config": true`.
 - The audit log is `~/.claude/hookguard/audit.jsonl`. It rotates at 10 MB.
 - This is pattern matching on the command text, not a sandbox. A determined script can
-  get around it. Treat it as a seatbelt, not a jail.
+  get around it. It catches accidents, not deliberate evasion.
