@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  },
+  "hooks": {
+    "pretooluse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "amagi-hookguard hook" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "bash|Read",
+        "hooks": [
+          { "type": "command", "command": "python3 .claude/hooks/block_rm.py", "timeout": "10" }
+        ]
+      }
+    ]
+  }
+}

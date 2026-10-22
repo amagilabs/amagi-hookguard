@@ -1,0 +1,23 @@
+{
+  "protected_branches": [
+    "main",
+    "master",
+    "release/*"
+  ],
+  "secret_globs": [
+    "*.secret",
+    "config/prod/*.yml"
+  ],
+  "secret_allow_globs": [
+    "tests/fixtures/*.pem"
+  ],
+  "disabled_rules": [
+    "system-power"
+  ],
+  "allow_commands": [
+    "^rm -rf \\./tmp/scratch$"
+  ],
+  "ask_as_block": false,
+  "fail_closed": false,
+  "audit_max_bytes": 10000000
+}

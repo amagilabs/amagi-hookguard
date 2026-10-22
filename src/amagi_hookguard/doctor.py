@@ -315,7 +315,7 @@ def check_audit_and_config(project_dir: str) -> Section:
     sec = Section("config and audit log")
     for src in cfg.sources:
         sec.add(OK, "config", f"loaded {display_path(src)}")
-    if not cfg.sources:
+    if not cfg.sources and not cfg.notes:
         sec.add(INFO, "config", "no hookguard.json found; using defaults (protected branches: main, master)")
     for note in cfg.notes:
         sec.add(WARN, "config", display_path(note) if note.startswith(str(Path.home())) else note)
