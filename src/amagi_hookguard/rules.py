@@ -186,6 +186,9 @@ def _rm_decision(cmd: SimpleCommand) -> Optional[Decision]:
     return None
 
 
+FIND_FILTERS = {"-name", "-iname", "-path", "-ipath", "-regex", "-iregex", "-newer", "-mtime", "-mmin", "-empty", "-size"}
+
+
 def _find_delete(cmd: SimpleCommand) -> Optional[Decision]:
     if cmd.verb != "find":
         return None
@@ -195,9 +198,13 @@ def _find_delete(cmd: SimpleCommand) -> Optional[Decision]:
     )
     if not deletes:
         return None
+    # `find . -name '*.pyc' -delete` is everyday cleanup; `find . -delete` empties the folder.
+    filtered = any(a in FIND_FILTERS for a in args)
     for a in args:
         if a.startswith("-") or a in ("(", "!"):
             break
+        if filtered and a in (".", "./"):
+            continue
         if is_critical_path(a):
             return Decision(BLOCK, "rm-critical-path", f"find {a} ... -delete")
     return None
