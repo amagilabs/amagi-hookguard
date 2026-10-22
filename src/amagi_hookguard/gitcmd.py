@@ -5,7 +5,6 @@ from __future__ import annotations
 import fnmatch
 import os
 import subprocess
-from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
 # git global options that take a separate value.
@@ -34,15 +33,18 @@ def split_git(args: List[str]) -> Tuple[Optional[str], List[str], Optional[str]]
     return None, [], cdir
 
 
-@dataclass
 class PushPlan:
-    force: bool = False  # whole push is forced (-f, --force, --force-with-lease, --mirror)
-    delete: bool = False
-    all_branches: bool = False  # --all / --mirror
-    remote: Optional[str] = None
-    # (destination branch or None for "current branch", forced?)
-    targets: List[Tuple[Optional[str], bool]] = field(default_factory=list)
-    deletes: List[str] = field(default_factory=list)
+    def __init__(self) -> None:
+        self.force = False  # whole push is forced (-f, --force, --force-with-lease, --mirror)
+        self.delete = False
+        self.all_branches = False  # --all / --mirror
+        self.remote: Optional[str] = None
+        # (destination branch or None for "current branch", forced?)
+        self.targets: List[Tuple[Optional[str], bool]] = []
+        self.deletes: List[str] = []
+
+    def __repr__(self) -> str:
+        return f"PushPlan({self.__dict__!r})"
 
 
 def _short(ref: str) -> str:

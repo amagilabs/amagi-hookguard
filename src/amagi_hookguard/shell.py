@@ -13,7 +13,6 @@ from __future__ import annotations
 import base64
 import re
 import shlex
-from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
 SEPARATORS = {";", "&&", "||", "|", "&", "|&", "(", ")", ";;", "{", "}"}
@@ -26,14 +25,24 @@ POWERSHELLS = {"powershell", "pwsh"}
 MAX_DEPTH = 5
 
 
-@dataclass
 class SimpleCommand:
     """One command in a pipeline or list, after wrappers are removed."""
 
-    argv: List[str]
-    redirects: List[Tuple[str, str]] = field(default_factory=list)
-    # Separator that came before this command ("" for the first one).
-    after: str = ""
+    __slots__ = ("argv", "redirects", "after")
+
+    def __init__(self, argv: List[str], redirects: Optional[List[Tuple[str, str]]] = None, after: str = "") -> None:
+        self.argv = argv
+        self.redirects = redirects if redirects is not None else []
+        # Separator that came before this command ("" for the first one).
+        self.after = after
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SimpleCommand):
+            return NotImplemented
+        return (self.argv, self.redirects, self.after) == (other.argv, other.redirects, other.after)
+
+    def __repr__(self) -> str:
+        return f"SimpleCommand({self.argv!r}, {self.redirects!r}, {self.after!r})"
 
     @property
     def verb(self) -> str:

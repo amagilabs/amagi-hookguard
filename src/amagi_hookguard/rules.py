@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import re
-from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional
 
 from . import gitcmd
@@ -16,11 +15,13 @@ ALLOW, ASK, BLOCK = "allow", "ask", "block"
 _RANK = {ALLOW: 0, ASK: 1, BLOCK: 2}
 
 
-@dataclass(frozen=True)
 class Rule:
-    id: str
-    action: str
-    summary: str
+    __slots__ = ("id", "action", "summary")
+
+    def __init__(self, id: str, action: str, summary: str) -> None:
+        self.id = id
+        self.action = action
+        self.summary = summary
 
 
 RULES = [
@@ -46,11 +47,21 @@ DEFAULT_READ_TOOLS = [r"Read", r"Grep", r"NotebookRead", r"mcp__.*(read|get|cat|
 PATH_KEYS = ("file_path", "path", "notebook_path", "filename", "file")
 
 
-@dataclass
 class Decision:
-    action: str = ALLOW
-    rule: Optional[str] = None
-    reason: str = ""
+    __slots__ = ("action", "rule", "reason")
+
+    def __init__(self, action: str = ALLOW, rule: Optional[str] = None, reason: str = "") -> None:
+        self.action = action
+        self.rule = rule
+        self.reason = reason
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Decision):
+            return NotImplemented
+        return (self.action, self.rule, self.reason) == (other.action, other.rule, other.reason)
+
+    def __repr__(self) -> str:
+        return f"Decision({self.action!r}, {self.rule!r}, {self.reason!r})"
 
     @property
     def blocked(self) -> bool:

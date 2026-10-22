@@ -9,9 +9,10 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from . import __version__, audit, doctor, hook, settings
-from .config import load_config
-from .rules import ASK, BLOCK, RULES, evaluate
+from . import __version__
+
+# Everything else is imported inside the handlers: `hook` runs on every tool
+# call, so it should load as little as possible.
 
 PROG = "amagi-hookguard"
 
@@ -67,12 +68,16 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _settings_target(args) -> Path:
+    from . import settings
+
     if args.settings:
         return Path(args.settings).expanduser()
     return settings.scope_path(args.scope, args.project)
 
 
 def cmd_install(args) -> int:
+    from . import doctor, settings
+
     path = _settings_target(args)
     command = settings.hook_command(args.absolute)
     try:
@@ -93,6 +98,8 @@ def cmd_install(args) -> int:
 
 
 def cmd_uninstall(args) -> int:
+    from . import doctor, settings
+
     path = _settings_target(args)
     try:
         removed, backup = settings.uninstall(path, dry_run=args.dry_run)
@@ -111,12 +118,17 @@ def cmd_uninstall(args) -> int:
 
 
 def cmd_doctor(args) -> int:
+    from . import doctor
+
     sections = doctor.run_doctor(args.project, args.settings, execute=not args.no_exec)
     print(doctor.to_json(sections) if args.json else doctor.render(sections))
     return 1 if doctor.counts(sections)[doctor.FAIL] else 0
 
 
 def cmd_check(args) -> int:
+    from .config import load_config
+    from .rules import ASK, BLOCK, evaluate
+
     cwd = os.path.abspath(args.cwd or os.getcwd())
     if args.read:
         tool, tool_input = "Read", {"file_path": args.read}
@@ -145,6 +157,8 @@ def cmd_check(args) -> int:
 
 
 def cmd_rules(args) -> int:
+    from .rules import RULES
+
     for r in RULES:
         print(f"{r.action.upper():<5}  {r.id:<26}  {r.summary}")
     print("\nTurn a rule off with \"disabled_rules\": [\"<id>\"] in ~/.claude/hookguard.json.")
@@ -152,6 +166,10 @@ def cmd_rules(args) -> int:
 
 
 def cmd_log(args) -> int:
+    from . import audit, doctor
+    from .config import load_config
+    from .rules import ASK, BLOCK
+
     path = audit.audit_path(load_config(os.getcwd()))
     if args.path:
         print(path)
@@ -181,6 +199,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         _parser().print_help()
         return 0
     if args.cmd == "hook":
+        from . import hook
+
         return hook.run()
     handlers = {
         "install": cmd_install,

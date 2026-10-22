@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -32,19 +31,24 @@ KNOWN_KEYS = {
 STRICTER_KEYS = {"protected_branches", "secret_globs", "ask_as_block", "fail_closed"}
 
 
-@dataclass
 class Config:
-    disabled_rules: List[str] = field(default_factory=list)
-    protected_branches: List[str] = field(default_factory=lambda: list(DEFAULT_PROTECTED))
-    secret_globs: List[str] = field(default_factory=list)
-    secret_allow_globs: List[str] = field(default_factory=list)
-    allow_commands: List[str] = field(default_factory=list)
-    ask_as_block: bool = False
-    fail_closed: bool = False
-    audit_log: Optional[str] = None
-    audit_max_bytes: int = 10_000_000
-    sources: List[str] = field(default_factory=list)
-    notes: List[str] = field(default_factory=list)
+    # A plain class rather than a dataclass: importing dataclasses pulls in
+    # inspect and ast, which roughly doubles the hook's start-up time.
+    def __init__(self) -> None:
+        self.disabled_rules: List[str] = []
+        self.protected_branches: List[str] = list(DEFAULT_PROTECTED)
+        self.secret_globs: List[str] = []
+        self.secret_allow_globs: List[str] = []
+        self.allow_commands: List[str] = []
+        self.ask_as_block = False
+        self.fail_closed = False
+        self.audit_log: Optional[str] = None
+        self.audit_max_bytes = 10_000_000
+        self.sources: List[str] = []
+        self.notes: List[str] = []
+
+    def __repr__(self) -> str:
+        return f"Config({self.__dict__!r})"
 
 
 def claude_home() -> Path:
