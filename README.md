@@ -88,6 +88,8 @@ amagi-hookguard doctor --settings examples/settings.broken.json --no-exec
 ```
 
 ```
+amagi-hookguard doctor 0.1.0
+
 file     examples/settings.broken.json
   ok    valid JSON
   FAIL  event 'pretooluse' should be 'PreToolUse' (case-sensitive; this block never runs)
